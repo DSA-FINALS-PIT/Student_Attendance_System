@@ -1,11 +1,89 @@
+import tkinter as tk
+from tkinter import messagebox, simpledialog
+
 # =========================================================
-# ADMIN INFORMATION SYSTEM
-# Console-Based Python Program
+# ADMIN INFORMATION SYSTEM - TKINTER VERSION
 # =========================================================
 
-# Store admins as a list of dictionaries
 admins = []
 
+# =========================================================
+# MAIN WINDOW
+# =========================================================
+
+root = tk.Tk()
+root.title("Admin Information System")
+root.geometry("700x650")
+root.config(bg="#f0f0f0")
+
+# =========================================================
+# TITLE
+# =========================================================
+
+title = tk.Label(
+    root,
+    text="ADMIN INFORMATION SYSTEM",
+    font=("Arial", 18, "bold"),
+    bg="#f0f0f0"
+)
+
+title.pack(pady=10)
+
+# =========================================================
+# INPUT FRAME
+# =========================================================
+
+frame = tk.Frame(root, bg="#f0f0f0")
+frame.pack(pady=10)
+
+# =========================================================
+# LABELS AND ENTRIES
+# =========================================================
+
+labels = [
+    "Admin ID",
+    "Full Name",
+    "Role",
+    "Contact",
+    "Email",
+    "Username",
+    "Password",
+    "Access Level"
+]
+
+entries = {}
+
+for i, label in enumerate(labels):
+
+    tk.Label(
+        frame,
+        text=label + ":",
+        font=("Arial", 11),
+        bg="#f0f0f0"
+    ).grid(row=i, column=0, sticky="w", pady=5)
+
+    entry = tk.Entry(frame, width=40)
+
+    if label == "Password":
+        entry.config(show="*")
+
+    entry.grid(row=i, column=1, pady=5)
+
+    entries[label] = entry
+
+# =========================================================
+# OUTPUT BOX
+# =========================================================
+
+output = tk.Text(root, width=80, height=15)
+output.pack(pady=15)
+
+# =========================================================
+# CLEAR OUTPUT
+# =========================================================
+
+def clearOutput():
+    output.delete(1.0, tk.END)
 
 # =========================================================
 # ADD ADMIN
@@ -13,16 +91,14 @@ admins = []
 
 def addAdmin():
 
-    print("\n========== ADD ADMIN ==========")
-
-    adminId = input("Enter Admin ID: ").strip()
-    fullName = input("Enter Full Name: ").strip()
-    role = input("Enter Position / Role: ").strip()
-    contact = input("Enter Contact Number: ").strip()
-    email = input("Enter Email Address: ").strip()
-    username = input("Enter Username: ").strip()
-    password = input("Enter Password: ").strip()
-    access = input("Enter Access Level: ").strip()
+    adminId = entries["Admin ID"].get().strip()
+    fullName = entries["Full Name"].get().strip()
+    role = entries["Role"].get().strip()
+    contact = entries["Contact"].get().strip()
+    email = entries["Email"].get().strip()
+    username = entries["Username"].get().strip()
+    password = entries["Password"].get().strip()
+    access = entries["Access Level"].get().strip()
 
     # Validate empty fields
     if (
@@ -35,16 +111,16 @@ def addAdmin():
         not password or
         not access
     ):
-        print("\n[ERROR] Please fill in all fields.")
+        messagebox.showerror("Error", "Please fill in all fields.")
         return
 
-    # Check duplicate admin ID
+    # Check duplicate ID
     for admin in admins:
         if admin["id"] == adminId:
-            print("\n[ERROR] Admin ID already exists.")
+            messagebox.showerror("Error", "Admin ID already exists.")
             return
 
-    # Store admin information
+    # Save admin
     admins.append({
         "id": adminId,
         "name": fullName,
@@ -56,8 +132,9 @@ def addAdmin():
         "access": access
     })
 
-    print(f"\n[SUCCESS] Admin '{fullName}' added successfully.")
+    messagebox.showinfo("Success", f"Admin '{fullName}' added successfully.")
 
+    clearEntries()
 
 # =========================================================
 # VIEW ADMINS
@@ -65,25 +142,29 @@ def addAdmin():
 
 def viewAdmins():
 
-    print("\n========== ADMIN LIST ==========")
+    clearOutput()
 
     if not admins:
-        print("No admin records found.")
+        output.insert(tk.END, "No admin records found.\n")
         return
 
     for admin in admins:
-        print(f"""
+
+        output.insert(
+            tk.END,
+            f"""
 ----------------------------------------
 Admin ID      : {admin['id']}
 Full Name     : {admin['name']}
 Role          : {admin['role']}
 Contact       : {admin['contact']}
-Email          : {admin['email']}
+Email         : {admin['email']}
 Username      : {admin['username']}
 Access Level  : {admin['access']}
 ----------------------------------------
-""")
 
+"""
+        )
 
 # =========================================================
 # DELETE ADMIN
@@ -91,28 +172,33 @@ Access Level  : {admin['access']}
 
 def deleteAdmin():
 
-    print("\n========== DELETE ADMIN ==========")
+    adminId = simpledialog.askstring(
+        "Delete Admin",
+        "Enter Admin ID to delete:"
+    )
 
-    adminId = input("Enter Admin ID to delete: ").strip()
+    if not adminId:
+        return
 
     for admin in admins:
 
         if admin["id"] == adminId:
 
-            confirm = input(
-                f"Delete admin '{admin['name']}'? (yes/no): "
-            ).lower()
+            confirm = messagebox.askyesno(
+                "Confirm Delete",
+                f"Delete admin '{admin['name']}'?"
+            )
 
-            if confirm == "yes":
+            if confirm:
                 admins.remove(admin)
-                print("\n[SUCCESS] Admin deleted successfully.")
-            else:
-                print("\nDelete cancelled.")
+                messagebox.showinfo(
+                    "Success",
+                    "Admin deleted successfully."
+                )
 
             return
 
-    print("\n[ERROR] Admin not found.")
-
+    messagebox.showerror("Error", "Admin not found.")
 
 # =========================================================
 # SEARCH ADMIN
@@ -120,9 +206,17 @@ def deleteAdmin():
 
 def searchAdmin():
 
-    print("\n========== SEARCH ADMIN ==========")
+    keyword = simpledialog.askstring(
+        "Search Admin",
+        "Enter Admin ID or Name:"
+    )
 
-    keyword = input("Enter Admin ID or Name: ").lower().strip()
+    if not keyword:
+        return
+
+    keyword = keyword.lower()
+
+    clearOutput()
 
     found = False
 
@@ -135,7 +229,9 @@ def searchAdmin():
 
             found = True
 
-            print(f"""
+            output.insert(
+                tk.END,
+                f"""
 ----------------------------------------
 Admin ID      : {admin['id']}
 Full Name     : {admin['name']}
@@ -145,11 +241,12 @@ Email         : {admin['email']}
 Username      : {admin['username']}
 Access Level  : {admin['access']}
 ----------------------------------------
-""")
+
+"""
+            )
 
     if not found:
-        print("\n[ERROR] No matching admin found.")
-
+        output.insert(tk.END, "No matching admin found.\n")
 
 # =========================================================
 # UPDATE ADMIN
@@ -157,23 +254,27 @@ Access Level  : {admin['access']}
 
 def updateAdmin():
 
-    print("\n========== UPDATE ADMIN ==========")
+    adminId = simpledialog.askstring(
+        "Update Admin",
+        "Enter Admin ID to update:"
+    )
 
-    adminId = input("Enter Admin ID to update: ").strip()
+    if not adminId:
+        return
 
     for admin in admins:
 
         if admin["id"] == adminId:
 
-            print("\nLeave blank if no changes.\n")
+            newName = simpledialog.askstring(
+                "Update Name",
+                f"New Name ({admin['name']}):"
+            )
 
-            newName = input(f"Full Name ({admin['name']}): ").strip()
-            newRole = input(f"Role ({admin['role']}): ").strip()
-            newContact = input(f"Contact ({admin['contact']}): ").strip()
-            newEmail = input(f"Email ({admin['email']}): ").strip()
-            newUsername = input(f"Username ({admin['username']}): ").strip()
-            newPassword = input("New Password: ").strip()
-            newAccess = input(f"Access Level ({admin['access']}): ").strip()
+            newRole = simpledialog.askstring(
+                "Update Role",
+                f"New Role ({admin['role']}):"
+            )
 
             if newName:
                 admin["name"] = newName
@@ -181,37 +282,34 @@ def updateAdmin():
             if newRole:
                 admin["role"] = newRole
 
-            if newContact:
-                admin["contact"] = newContact
+            messagebox.showinfo(
+                "Success",
+                "Admin updated successfully."
+            )
 
-            if newEmail:
-                admin["email"] = newEmail
-
-            if newUsername:
-                admin["username"] = newUsername
-
-            if newPassword:
-                admin["password"] = newPassword
-
-            if newAccess:
-                admin["access"] = newAccess
-
-            print("\n[SUCCESS] Admin information updated.")
             return
 
-    print("\n[ERROR] Admin not found.")
-
+    messagebox.showerror("Error", "Admin not found.")
 
 # =========================================================
-# LOGIN SYSTEM
+# ADMIN LOGIN
 # =========================================================
 
 def adminLogin():
 
-    print("\n========== ADMIN LOGIN ==========")
+    username = simpledialog.askstring(
+        "Admin Login",
+        "Username:"
+    )
 
-    username = input("Username: ").strip()
-    password = input("Password: ").strip()
+    password = simpledialog.askstring(
+        "Admin Login",
+        "Password:",
+        show="*"
+    )
+
+    if not username or not password:
+        return
 
     for admin in admins:
 
@@ -220,66 +318,91 @@ def adminLogin():
             admin["password"] == password
         ):
 
-            print(f"\nWelcome, {admin['name']}!")
+            messagebox.showinfo(
+                "Login Success",
+                f"Welcome, {admin['name']}!"
+            )
+
             return
 
-    print("\n[ERROR] Invalid username or password.")
-
-
-# =========================================================
-# MAIN MENU
-# =========================================================
-
-def mainMenu():
-
-    while True:
-
-        print("""
-=================================================
-        ADMIN INFORMATION SYSTEM
-=================================================
-[1] Add Admin
-[2] View Admins
-[3] Update Admin
-[4] Delete Admin
-[5] Search Admin
-[6] Admin Login
-[7] Exit
-=================================================
-""")
-
-        choice = input("Enter your choice: ").strip()
-
-        if choice == "1":
-            addAdmin()
-
-        elif choice == "2":
-            viewAdmins()
-
-        elif choice == "3":
-            updateAdmin()
-
-        elif choice == "4":
-            deleteAdmin()
-
-        elif choice == "5":
-            searchAdmin()
-
-        elif choice == "6":
-            adminLogin()
-
-        elif choice == "7":
-            print("\nSystem closed.")
-            break
-
-        else:
-            print("\n[ERROR] Invalid choice.")
-
+    messagebox.showerror(
+        "Login Failed",
+        "Invalid username or password."
+    )
 
 # =========================================================
-# RUN SYSTEM
+# CLEAR INPUT FIELDS
 # =========================================================
 
-mainMenu()
+def clearEntries():
 
+    for entry in entries.values():
+        entry.delete(0, tk.END)
 
+# =========================================================
+# BUTTON FRAME
+# =========================================================
+
+buttonFrame = tk.Frame(root, bg="#f0f0f0")
+buttonFrame.pack(pady=10)
+
+# =========================================================
+# BUTTONS
+# =========================================================
+
+tk.Button(
+    buttonFrame,
+    text="Add Admin",
+    width=15,
+    command=addAdmin
+).grid(row=0, column=0, padx=5, pady=5)
+
+tk.Button(
+    buttonFrame,
+    text="View Admins",
+    width=15,
+    command=viewAdmins
+).grid(row=0, column=1, padx=5, pady=5)
+
+tk.Button(
+    buttonFrame,
+    text="Update Admin",
+    width=15,
+    command=updateAdmin
+).grid(row=0, column=2, padx=5, pady=5)
+
+tk.Button(
+    buttonFrame,
+    text="Delete Admin",
+    width=15,
+    command=deleteAdmin
+).grid(row=1, column=0, padx=5, pady=5)
+
+tk.Button(
+    buttonFrame,
+    text="Search Admin",
+    width=15,
+    command=searchAdmin
+).grid(row=1, column=1, padx=5, pady=5)
+
+tk.Button(
+    buttonFrame,
+    text="Admin Login",
+    width=15,
+    command=adminLogin
+).grid(row=1, column=2, padx=5, pady=5)
+
+tk.Button(
+    root,
+    text="Exit",
+    width=20,
+    bg="red",
+    fg="white",
+    command=root.destroy
+).pack(pady=10)
+
+# =========================================================
+# RUN PROGRAM
+# =========================================================
+
+root.mainloop()
