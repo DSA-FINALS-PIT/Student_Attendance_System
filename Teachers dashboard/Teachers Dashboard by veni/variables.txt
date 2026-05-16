@@ -1,0 +1,108 @@
+VARIABLES
+
+
+Line 8   : attendanceRecords    - stores all saved attendance records as a list of dicts
+Line 11  : students             - stores all added students as a list of dicts
+Line 14  : today                - holds today's date as a string (e.g. "2025-05-13")
+Line 17  : window               - the main application window
+Line 23  : topBar               - the blue frame at the top showing the title and date
+Line 44  : style                - used to customize the look of the tab labels
+Line 47  : tabs                 - the notebook widget that holds all 4 tabs
+Line 51  : tabStudents          - the frame (page) inside the Students tab
+Line 52  : tabAttendance        - the frame (page) inside the Take Attendance tab
+Line 53  : tabRecords           - the frame (page) inside the View Records tab
+Line 54  : tabReports           - the frame (page) inside the Reports tab
+Line 81  : columns              - column names ("ID", "Name", "Section") for the student table
+Line 82  : studentTable         - the table widget that displays the list of students
+Line 107 : formFrame            - the bordered box labeled "Add / Edit Student" with input fields
+Line 113 : entryId              - text input field for typing the Student ID
+Line 117 : entryName            - text input field for typing the student's Full Name
+Line 121 : entrySection         - text input field for typing the student's Section
+Line 126 : buttonFrame          - frame that holds the Add and Delete buttons side by side
+Line 130 : sid                  - temporarily holds the Student ID typed in entryId
+Line 131 : name                 - temporarily holds the Full Name typed in entryName or nameEntry
+Line 132 : section              - temporarily holds the Section typed in entrySection
+Line 152 : selected             - holds the currently selected row in studentTable or attTable
+Line 157 : values               - temporarily holds the selected row's cell values from studentTable
+Line 158 : studentId            - holds the ID of the student being deleted or whose status is set
+Line 159 : studentName          - holds the name of the student being deleted
+Line 161 : confirm              - stores True or False from the yes/no delete confirmation dialog
+Line 184 : attendanceColumns    - column names for the attendance table
+Line 185 : attendanceTable      - the table widget in the attendance tab showing students and status
+Line 201 : todaysStatus         - dict tracking today's attendance: key = student ID, value = status
+Line 207 : status               - temporarily holds the status fetched from todaysStatus
+Line 215 : statusFrame          - frame holding the "Set selected student as:" label and status buttons
+Line 248 : unmarked             - list of student IDs that still have "—" (not yet marked)
+Line 280 : recordCols           - column names for the records table
+Line 281 : recordTable          - the table widget in View Records tab showing all saved records
+Line 298 : sortedRecords        - a sorted copy of attendanceRecords used by the sorting functions
+Line 328 : sortFrame            - frame holding the "Sort by:" label and the sort buttons
+Line 336 : recordScroll         - vertical scrollbar attached to recTable
+Line 345 : summaryText          - tkinter StringVar bound to the summary label in the Reports tab
+Line 356 : total                - total number of attendance records
+Line 357 : present              - count of "Present" records
+Line 358 : absent               - count of "Absent" records
+Line 359 : late                 - count of "Late" records
+Line 360 : excused              - count of "Excused" records
+Line 362 : percentage           - attendance rate percentage: (present / total) * 100
+Line 364 : summary              - the full formatted summary string shown in the Reports tab
+Line 380 : filename             - the CSV filename built from today's date
+Line 382 : writer               - the CSV writer object used to write rows into the exported file
+Line 390 : reportbuttoFrame     - frame holding the Refresh Summary and Export to CSV buttons
+Line 403 : name                 - temporarily holds the teacher's name typed in nameEntry
+Line 411 : statusBar            - the grey bar at the bottom showing the teacher's name and date
+Line 417 : nameDialog           - the small popup window asking the teacher to enter their name
+Line 431 : nameEntry            - text input field inside the name popup
+
+
+
+
+  FUNCTIONS
+
+
+Line 63  : makeButton          - creates and returns a styled button widget
+             params: parent, text, command, color
+
+Line 95  : loadstudentTable   - clears studentTable and re-fills it from the students list
+             params: none
+
+Line 129 : addStudent          - reads the entry fields, validates input, adds student to the list
+             params: none
+
+Line 151 : deleteStudent       - deletes the selected student from the list after confirmation
+             params: none
+
+Line 203 : loadattendanceTable       - clears attTable and re-fills it using students and todaysStatus
+             params: none
+
+Line 221 : setStatus           - sets the attendance status of the selected student in attTable
+             params: status
+
+Line 246 : saveAttendance      - checks all students are marked then saves records to attendanceRecords
+             params: none
+
+Line 297 : sortingbyDate        - sorts attendanceRecords by date (newest first) and reloads recTable
+             params: none
+
+Line 305 : sortingbyAZ          - sorts attendanceRecords alphabetically by name and reloads recTable
+             params: none
+
+Line 312 : sortingbyStatus      - sorts attendanceRecords by status and reloads recTable
+             params: none
+
+Line 320 : loadrecordsTable   - clears recTable and re-fills it from attendanceRecords in original order
+             params: none
+
+Line 351 : showSmmary         - counts each status, calculates attendance rate, updates summaryText
+             params: none
+
+Line 374 : exporttoCSV     - writes all attendanceRecords to a CSV file
+             params: none
+
+Line 402 : confirmName     - validates name input, closes nameDialog, shows main window and statusBar
+             params: none
+
+
+
+  TOTAL: 47 variables   |   14 functions
+
